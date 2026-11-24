@@ -6,24 +6,19 @@ package main
 import (
 	"fmt"
 	"sync"
-	"sync/atomic"
 )
 
 func main() {
 	const goroutines = 100
 	const perGoroutine = 1000
 
-	var counter int64
-	counter = 10000
+	var counter int
 	var wg sync.WaitGroup
 
 	for i := 0; i < goroutines; i++ {
 		wg.Go(func() {
 			for j := 0; j < perGoroutine; j++ {
-				// counter++
-				if counter > 0 {
-					atomic.AddInt64(&counter, -1) // 原子操作，避免数据竞争
-				}
+				counter++ // 读 counter、加一、写回；三步不是原子的
 			}
 		})
 	}
